@@ -1,36 +1,41 @@
-import 'dart:convert';
-
+import 'package:anime_app/Screen/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:anime_app/component/user_welcome.dart';
-// import 'package:anime_app/component/anime_recomended_card.dart';
+import 'package:anime_app/component/anime_recomended_card.dart';
 import 'package:anime_app/component/popular_anime_card.dart';
 import 'package:anime_app/component/search_box.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:anime_app/models/anime_model.dart';
 import 'package:anime_app/models/top_anime_model.dart';
 import 'serivce/anime_service.dart';
+import 'serivce/popular_item_service.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-void getAnime() async {
-  Response response = await get('https://api.jikan.moe/v3/top/anime/');
-  Map jsonResponse = json.decode(response.body);
-  Anime anime = Anime.fromJson(jsonResponse);
-  print(anime.request_cached);
-}
+// void getAnime() async {
+//   Response response = await get('https://api.jikan.moe/v3/top/anime/');
+//   Map jsonResponse = json.decode(response.body);
+//   Anime anime = Anime.fromJson(jsonResponse);
+//   print(anime.request_cached);
+// }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: Home());
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Home(),
+      initialRoute: '/',
+      routes: {
+        '/detail': (context) => DetailPage(),
+      },
+    );
   }
 }
 
@@ -41,15 +46,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Future<Anime> futureAnime;
-
+  Future<Anime> topItem;
   @override
   void initState() {
     super.initState();
-    loadAnime();
+    futureAnime = loadAnime(http.Client());
+    topItem = loadPopularItem(http.Client());
   }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text(
@@ -75,6 +82,7 @@ class _HomeState extends State<Home> {
         color: Colors.white,
         padding: EdgeInsets.only(left: 20),
         child: ListView(
+          shrinkWrap: true,
           children: [
             SizedBox(
               height: 40,
@@ -88,40 +96,37 @@ class _HomeState extends State<Home> {
               height: 30,
             ),
             Text(
-              "Anime Recomendation",
+              "Top Anime TV",
               style: TextStyle(color: Colors.grey[400]),
             ),
             SizedBox(
               height: 10,
             ),
             Container(
-              height: 210,
+              height: size.height * 0.4 - 30,
               child: FutureBuilder(
-                future: loadAnime(),
+                future: futureAnime,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Container(
-                      child: ListView.builder(itemBuilder: (context, index) {
-                        TopList list = snapshot.data.top[index];
-                        return Column(
-                          children: [Text("${list.rank}")],
-                        );
-                      }),
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data.top.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            TopList list = snapshot.data.top[index];
+                            return Row(
+                              children: [AnimeRecomendedCard(list: list)],
+                            );
+                          }),
                     );
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }
+
+                  return CircularProgressIndicator();
                 },
               ),
-              // child: ListView(
-              //   scrollDirection: Axis.horizontal,
-              //   children: [
-              //     AnimeRecomendedCard(),
-              //     AnimeRecomendedCard(),
-              //     AnimeRecomendedCard(),
-              //     AnimeRecomendedCard(),
-              //   ],
-              // ),
             ),
             SizedBox(
               height: 20,
@@ -136,82 +141,33 @@ class _HomeState extends State<Home> {
             SizedBox(
               height: 10,
             ),
-            PopularWidgetCard(),
-            PopularWidgetCard(),
-            PopularWidgetCard(),
-            PopularWidgetCard(),
+            Container(
+              child: FutureBuilder(
+                future: topItem,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      child: ListView.builder(
+                          physics: ClampingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.top.length,
+                          itemBuilder: (context, index) {
+                            TopList list = snapshot.data.top[index];
+                            return Row(
+                              children: [PopularWidget(list: list)],
+                            );
+                          }),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+
+                  return CircularProgressIndicator();
+                },
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class AnimeRecomendedCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              child: Image.asset('assets/images/tiny.jpg')),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            "Cowboy Bebop",
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              Container(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.thumb_up,
-                      color: Colors.yellow[400],
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '480',
-                      style: TextStyle(fontSize: 12),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 15,
-              ),
-              Container(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: Colors.yellow[400],
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '4.5',
-                      style: TextStyle(fontSize: 12),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          )
-        ],
       ),
     );
   }

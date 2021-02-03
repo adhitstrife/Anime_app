@@ -8,8 +8,8 @@ Map<String, dynamic> _decode(String jsonString) {
   return jsonDecode(jsonString);
 }
 
-Future<Anime> loadAnime(http.Client client) async {
-  final response = await client.get('https://api.jikan.moe/v3/top/anime/');
+Future<Anime> loadPopularItem(http.Client client) async {
+  final response = await client.get('https://api.jikan.moe/v3/top/anime/1/bypopularity');
   // return parseAnime(response.body);
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,

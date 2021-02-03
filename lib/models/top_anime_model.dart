@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 
 class TopList {
@@ -5,18 +7,24 @@ class TopList {
   final String title;
   final String image_url;
   final String type;
+  final String date;
+  final num score;
 
-
-  TopList({this.rank, this.title, this.image_url, this.type});
+  TopList(
+      {this.rank,
+      this.title,
+      this.image_url,
+      this.type,
+      this.date,
+      this.score});
 
   factory TopList.fromJson(Map<String, dynamic> json) {
     return TopList(
-      rank: json['rank'] as int,
-      title: json['title'] as String,
-      image_url: json['image_url'] as String,
-      type: json['type'] as String
-    );
+        rank: json['rank'] as int,
+        title: json['title'] as String,
+        image_url: json['image_url'] as String,
+        type: json['type'] as String,
+        date: json['start_date'] as String,
+        score: json['score']);
   }
-
-  
 }

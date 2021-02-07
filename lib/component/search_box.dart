@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:anime_app/Screen/search.dart';
 
 class SearchBox extends StatelessWidget {
-  const SearchBox({
-    Key key,
-  }) : super(key: key);
+  final searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +16,17 @@ class SearchBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(50),
       ),
       child: TextField(
+        controller: searchController,
+        onSubmitted: (value) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SearchScreen(text: searchController.text)));
+        },
         decoration: InputDecoration(
             hintText: "Search Anime",
-            hintStyle:
-                TextStyle(color: Colors.grey[500].withOpacity(0.5)),
+            hintStyle: TextStyle(color: Colors.grey[500].withOpacity(0.5)),
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none),
       ),

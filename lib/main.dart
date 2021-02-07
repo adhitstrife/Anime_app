@@ -1,4 +1,5 @@
 import 'package:anime_app/Screen/detail.dart';
+import 'package:anime_app/Screen/search.dart';
 import 'package:flutter/material.dart';
 import 'package:anime_app/component/user_welcome.dart';
 import 'package:anime_app/component/anime_recomended_card.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/detail': (context) => DetailPage(),
+        '/search': (context) => SearchScreen()
       },
     );
   }
@@ -153,8 +155,13 @@ class _HomeState extends State<Home> {
                           itemCount: snapshot.data.top.length,
                           itemBuilder: (context, index) {
                             TopList list = snapshot.data.top[index];
-                            return Row(
-                              children: [PopularWidget(list: list)],
+                            return Column(
+                              children: [
+                                PopularWidget(list: list),
+                                SizedBox(
+                                  height: 20,
+                                )
+                              ],
                             );
                           }),
                     );

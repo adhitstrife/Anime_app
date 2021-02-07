@@ -8,6 +8,7 @@ class TopList {
   final String image_url;
   final String type;
   final String date;
+  final int episodes;
   final num score;
 
   TopList(
@@ -16,7 +17,8 @@ class TopList {
       this.image_url,
       this.type,
       this.date,
-      this.score});
+      this.score,
+      this.episodes});
 
   factory TopList.fromJson(Map<String, dynamic> json) {
     return TopList(
@@ -25,6 +27,7 @@ class TopList {
         image_url: json['image_url'] as String,
         type: json['type'] as String,
         date: json['start_date'] as String,
+        episodes: json['episodes'] as int,
         score: json['score']);
   }
 }

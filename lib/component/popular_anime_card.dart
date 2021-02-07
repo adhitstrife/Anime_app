@@ -26,18 +26,22 @@ class PopularWidget extends StatelessWidget {
         Navigator.pushNamed(context, '/detail');
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5.0),
         child: Column(
           children: [
             Container(
               child: Row(
                 children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      child: Image.network(
-                        list.image_url,
-                        height: size.height * 0.3 - 30,
-                      )),
+                  Container(
+                    width: size.width * 0.4 - 10,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        child: Image.network(
+                          list.image_url,
+                          height: size.height * 0.3 - 30,
+                          fit: BoxFit.fitWidth,
+                          // width: size.width * 0.3 - 30,
+                        )),
+                  ),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +63,7 @@ class PopularWidget extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.calendar_today,
+                                  Icons.list,
                                   color: Colors.yellow[400],
                                   size: 12,
                                 ),
@@ -67,7 +71,7 @@ class PopularWidget extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  list.date,
+                                  list.episodes.toString(),
                                   style: TextStyle(fontSize: 12),
                                 )
                               ],

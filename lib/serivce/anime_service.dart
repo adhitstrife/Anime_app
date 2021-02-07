@@ -11,7 +11,7 @@ Map<String, dynamic> _decode(String jsonString) {
 Future<Anime> loadAnime(http.Client client) async {
   final response = await client.get('https://api.jikan.moe/v3/top/anime/');
   // return parseAnime(response.body);
-  if (response.statusCode == 200) {
+  if (response.statusCode == 200) { 
     // If the server did return a 200 OK response,
     // then parse the JSON.
     Map<String, dynamic> result = await compute(_decode, response.body);
